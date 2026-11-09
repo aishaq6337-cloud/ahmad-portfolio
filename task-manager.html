@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahmad's Student Task Manager</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6fa;
+            color: #202b3c;
+            margin: 0;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #087e8b;
+        }
+
+        p {
+            text-align: center;
+        }
+
+        .task-entry {
+            display: flex;
+            gap: 10px;
+            margin: 25px 0;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #ccd5df;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #087e8b;
+            color: white;
+            border: none;
+            padding: 11px 15px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #101c3c;
+        }
+
+        .task {
+            background: #edf5f6;
+            padding: 13px;
+            margin: 10px 0;
+            border-radius: 7px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task span {
+            overflow-wrap: anywhere;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .delete {
+            background: #d9534f;
+        }
+
+        @media (max-width: 450px) {
+            .container {
+                padding: 20px;
+            }
+
+            .task-entry {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Student Task Manager</h1>
+
+    <p>Organise your academic activities and stay productive.</p>
+
+    <div class="task-entry">
+        <input type="text" id="taskInput"
+               placeholder="Enter your academic task">
+
+        <button onclick="addTask()">Add Task</button>
+    </div>
+
+    <h3>My Academic Tasks</h3>
+
+    <div id="taskList"></div>
+
+</div>
+
+<script>
+    let tasks = JSON.parse(
+        localStorage.getItem("studentTasks")
+    ) || [];
+
+    function saveTasks() {
+        localStorage.setItem(
+            "studentTasks",
+            JSON.stringify(tasks)
+        );
+    }
+
+    function addTask() {
+        const input = document.getElementById("taskInput");
+        const taskName = input.value.trim();
+
+        if (taskName === "") {
+            alert("Please enter a task.");
+            return;
+        }
+
+        tasks.push({
+            name: taskName,
+            completed: false
+        });
+
+        input.value = "";
+        saveTasks();
+        displayTasks();
+    }
+
+    function displayTasks() {
+        const list = document.getElementById("taskList");
+        list.innerHTML = "";
+
+        tasks.forEach(function(task, index) {
+            const item = document.createElement("div");
+            item.className = "task";
+
+            const name = document.createElement("span");
+            name.textContent = task.name;
+
+            if (task.completed) {
+                name.classList.add("completed");
+            }
+
+            const complete = document.createElement("button");
+            complete.textContent = task.completed ? "Undo" : "Complete";
+
+            complete.onclick = function() {
+                tasks[index].completed = !tasks[index].completed;
+                saveTasks();
+                displayTasks();
+            };
+
+            const remove = document.createElement("button");
+            remove.textContent = "Delete";
+            remove.className = "delete";
+
+            remove.onclick = function() {
+                tasks.splice(index, 1);
+                saveTasks();
+                displayTasks();
+            };
+
+            item.appendChild(name);
+            item.appendChild(complete);
+            item.appendChild(remove);
+
+            list.appendChild(item);
+        });
+    }
+
+    displayTasks();
+</script>
+
+</body>
+</html>
