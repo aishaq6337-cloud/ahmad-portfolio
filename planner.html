@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academic Planner | Ahmad Ishaq</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+    <h1>Academic Planner</h1>
+    <p>Organise my academic tasks and activities</p>
+</header>
+
+<nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About Me</a>
+    <a href="projects.html">Projects</a>
+    <a href="planner.html">Academic Planner</a>
+    <a href="contact.html">Contact</a>
+</nav>
+
+<main>
+    <section>
+        <h2>My Study Tasks</h2>
+        <p>Add your academic tasks, mark them as completed, or delete them.</p>
+
+        <input type="text" id="taskInput" placeholder="Enter an academic task">
+        <button id="addTaskBtn" type="button">Add Task</button>
+
+        <ul id="taskList"></ul>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2026 Ahmad Ishaq. All Rights Reserved.</p>
+</footer>
+
+<script>
+const taskInput = document.getElementById("taskInput");
+const addTaskBtn = document.getElementById("addTaskBtn");
+const taskList = document.getElementById("taskList");
+
+let tasks = JSON.parse(localStorage.getItem("plannerTasks")) || [];
+
+function displayTasks() {
+    taskList.innerHTML = "";
+
+    tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.textContent = task.text;
+
+        if (task.completed) {
+            li.style.textDecoration = "line-through";
+        }
+
+        const completeBtn = document.createElement("button");
+        completeBtn.textContent = task.completed ? "Undo" : "Complete";
+        completeBtn.onclick = () => {
+            tasks[index].completed = !tasks[index].completed;
+            saveTasks();
+        };
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.onclick = () => {
+            tasks.splice(index, 1);
+            saveTasks();
+        };
+
+        li.appendChild(completeBtn);
+        li.appendChild(deleteBtn);
+        taskList.appendChild(li);
+    });
+}
+
+function saveTasks() {
+    localStorage.setItem("plannerTasks", JSON.stringify(tasks));
+    displayTasks();
+}
+
+addTaskBtn.addEventListener("click", () => {
+    const taskText = taskInput.value.trim();
+
+    if (taskText === "") {
+        alert("Please enter a task.");
+        return;
+    }
+
+    tasks.push({ text: taskText, completed: false });
+    taskInput.value = "";
+    saveTasks();
+});
+
+displayTasks();
+</script>
+
+</body>
+</html>
